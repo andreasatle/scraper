@@ -17,3 +17,8 @@ package-dir = {"" = "."}
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["scraper*"]
+
+[tool.setuptools.package-data]
+scraper = [
+  "js/*.js",
+]

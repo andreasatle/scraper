@@ -1,15 +1,18 @@
 import json
 import pathlib
 import sys
+from typing import Optional
 from playwright.async_api import Page
 from .scraping_config import ScrapingConfig
+from .js_manager import JsManager
 
 
 class PageAutomator:
     """Handles page automation tasks like scrolling, clicking, and JavaScript execution"""
     
-    def __init__(self, config: ScrapingConfig):
+    def __init__(self, config: ScrapingConfig, js_manager: Optional[JsManager] = None):
         self.config = config
+        self.js_manager = js_manager or JsManager()
 
     async def run_page_automation(self, page: Page) -> None:
         """Run all configured page automation tasks"""
@@ -36,31 +39,12 @@ class PageAutomator:
 
     async def _scroll_page(self, page: Page) -> None:
         """Scroll the page according to configuration"""
-        await page.evaluate(
-            f"""async () => {{
-                const sleep = ms => new Promise(r => setTimeout(r, ms));
-                let prev = 0;
-                let stableCount = 0;
-                const maxStable = 3;
-                const tries = {self.config.scrolls if self.config.scrolls else 999999};
-                
-                for (let i = 0; i < tries; i++) {{
-                    window.scrollTo(0, document.body.scrollHeight);
-                    await sleep({self.config.scroll_wait_ms});
-                    const h = document.body.scrollHeight;
-                    
-                    if ({'true' if self.config.scroll_until_end else 'false'}) {{
-                        if (h === prev) {{
-                            stableCount++;
-                            if (stableCount >= maxStable) break;
-                        }} else {{
-                            stableCount = 0;
-                        }}
-                        prev = h;
-                    }}
-                }}
-            }}"""
+        script = self.js_manager.scroll(
+            tries=self.config.scrolls,
+            wait_ms=self.config.scroll_wait_ms,
+            until_end=self.config.scroll_until_end,
         )
+        await page.evaluate(script)
 
     async def _click_selector(self, page: Page, selector: str) -> None:
         """Click a specific selector on the page"""

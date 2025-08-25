@@ -7,16 +7,18 @@ from .url_normalizer import URLNormalizer
 from .page_automator import PageAutomator
 from .content_extractor import ContentExtractor
 from .scraping_config import ScrapingConfig
+from .js_manager import JsManager
 
 
 class WebScraper:
     """Main scraper class that orchestrates the crawling process"""
     
-    def __init__(self, config: ScrapingConfig):
+    def __init__(self, config: ScrapingConfig, js_manager: JsManager | None = None):
         self.config = config
+        self.js_manager = js_manager or JsManager()
         self.url_normalizer = URLNormalizer()
-        self.page_automator = PageAutomator(config)
-        self.content_extractor = ContentExtractor()
+        self.page_automator = PageAutomator(config, js_manager=self.js_manager)
+        self.content_extractor = ContentExtractor(js_manager=self.js_manager)
         self.seen_urls: Set[str] = set()
         self.results: List[Dict[str, Any]] = []
 
