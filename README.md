@@ -55,6 +55,7 @@ Each result is a JSON object with:
 - `url`: page URL
 - `text`: visible structured text
 - `links`: list of `{href, text}` (normalized, deduped)
+- `tables`: list of tables, each `{headers: [[...]], rows: [[...]]}`
 - `depth`: crawl depth for that page
 - `error`: present if navigation/extraction failed
 
@@ -62,7 +63,7 @@ Each result is a JSON object with:
 
 - `WebScraper`: orchestrates crawling
 - `PageAutomator`: waits, clicks, scrolling (uses bundled JS)
-- `ContentExtractor`: extracts visible text and links (uses bundled JS)
+- `ContentExtractor`: extracts visible text, links, and tables (uses bundled JS)
 - `URLNormalizer`: URL normalization and domain policy
 - `JsManager`: loads JS from `scraper/js` and parameterizes snippets
 

@@ -10,8 +10,8 @@ class ContentExtractor:
     def __init__(self, js_manager: Optional[JsManager] = None) -> None:
         self.js_manager = js_manager or JsManager()
     
-    async def extract_content(self, page: Page) -> Tuple[str, List[Dict[str, str]]]:
-        """Extract text content and links from a page"""
+    async def extract_content(self, page: Page, include_tables: bool = False) -> Tuple[str, List[Dict[str, str]], Optional[List[Dict[str, List[List[str]]]]]]:
+        """Extract text content, links, and optionally tables from a page"""
         # Wait for initial states
         try:
             await page.wait_for_load_state("domcontentloaded")
@@ -25,8 +25,13 @@ class ContentExtractor:
         # Extract and clean links
         links = await self._extract_links(page)
         cleaned_links = self._clean_links(links, page.url)
+
+        # Extract tables conditionally
+        tables: Optional[List[Dict[str, List[List[str]]]]] = None
+        if include_tables:
+            tables = await self._extract_tables(page)
         
-        return text, cleaned_links
+        return text, cleaned_links, tables
 
     async def _extract_text(self, page: Page) -> str:
         """Extract visible text content from the page"""
@@ -36,6 +41,11 @@ class ContentExtractor:
     async def _extract_links(self, page: Page) -> List[Dict[str, str]]:
         """Extract visible links from the page"""
         script = self.js_manager.extract_links()
+        return await page.evaluate(script)
+
+    async def _extract_tables(self, page: Page) -> List[Dict[str, List[List[str]]]]:
+        """Extract visible tables from the page"""
+        script = self.js_manager.extract_tables()
         return await page.evaluate(script)
 
     @staticmethod

@@ -17,6 +17,7 @@ class JsManager:
     _SCROLL_FILE: Final[str] = "js/scroll.js"
     _EXTRACT_TEXT_FILE: Final[str] = "js/extract_text.js"
     _EXTRACT_LINKS_FILE: Final[str] = "js/extract_links.js"
+    _EXTRACT_TABLES_FILE: Final[str] = "js/extract_tables.js"
 
     def __init__(self, package: str = __package__ or "scraper") -> None:
         self.package = package
@@ -47,3 +48,6 @@ class JsManager:
 
     def extract_links(self) -> str:
         return self._get_cached("extract_links", self._EXTRACT_LINKS_FILE).content
+
+    def extract_tables(self) -> str:
+        return self._get_cached("extract_tables", self._EXTRACT_TABLES_FILE).content

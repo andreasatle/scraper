@@ -24,6 +24,7 @@ class ScrapingConfig:
     scroll_until_end: bool = False
     eval_js: Optional[str] = None
     eval_js_file: Optional[str] = None
+    include_tables: bool = False
 
     def __post_init__(self):
         if self.click_selectors is None:

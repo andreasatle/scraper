@@ -45,6 +45,9 @@ class ScraperCLI:
         parser.add_argument("--eval-js", default=None, help="Custom JS (inline) to run on each page")
         parser.add_argument("--eval-js-file", default=None, 
                           help="Path to a JS file to run on each page")
+
+        # Extraction toggles
+        parser.add_argument("--tables", action="store_true", help="Include table extraction")
         
         return parser
 
@@ -70,7 +73,8 @@ class ScraperCLI:
             scroll_wait_ms=args.scroll_wait_ms,
             scroll_until_end=args.scroll_until_end,
             eval_js=args.eval_js,
-            eval_js_file=args.eval_js_file
+            eval_js_file=args.eval_js_file,
+            include_tables=args.tables,
         )
 
 

@@ -81,14 +81,18 @@ class WebScraper:
                 await page.goto(url, timeout=self.config.goto_timeout_ms, 
                                wait_until="domcontentloaded")
                 await self.page_automator.run_page_automation(page)
-                text, links = await self.content_extractor.extract_content(page)
+                text, links, tables = await self.content_extractor.extract_content(
+                    page, include_tables=self.config.include_tables
+                )
                 
-                result = {
+                result: Dict[str, Any] = {
                     "url": url, 
                     "text": text, 
-                    "links": links, 
+                    "links": links,
                     "depth": depth
                 }
+                if self.config.include_tables:
+                    result["tables"] = tables or []
                 self.results.append(result)
                 
                 await asyncio.sleep(self.config.delay_ms / 1000)
@@ -102,6 +106,8 @@ class WebScraper:
                     "links": [], 
                     "depth": depth
                 }
+                if self.config.include_tables:
+                    result["tables"] = []
                 self.results.append(result)
                 return result
             finally:
