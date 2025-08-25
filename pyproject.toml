@@ -1,0 +1,19 @@
+[project]
+name = "scraper"
+version = "0.1.0"
+description = "Playwright-based web scraper with class-based architecture"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "playwright>=1.54.0",
+]
+
+[project.scripts]
+scraper = "scraper.__main__:main"
+
+[tool.setuptools]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["scraper*"]
