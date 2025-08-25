@@ -35,6 +35,7 @@ Common flags:
 - `--click-selector`: repeatable; click elements before extraction
 - `--scrolls`, `--scroll-wait-ms`, `--scroll-until-end`
 - `--eval-js`, `--eval-js-file`: optional custom JS per page
+- `--tables`: include table extraction (off by default)
 
 ### Python API
 
@@ -42,11 +43,11 @@ Common flags:
 import asyncio
 from scraper import WebScraper, ScrapingConfig
 
-config = ScrapingConfig(depth=1, max_pages=10, scroll_until_end=True)
+config = ScrapingConfig(depth=1, max_pages=10, scroll_until_end=True, include_tables=True)
 results = asyncio.run(WebScraper(config).scrape("https://example.com"))
 
 for r in results:
-    print(r["url"], len(r["text"]))
+    print(r["url"], len(r.get("tables", [])))
 ```
 
 ## Output
@@ -55,7 +56,7 @@ Each result is a JSON object with:
 - `url`: page URL
 - `text`: visible structured text
 - `links`: list of `{href, text}` (normalized, deduped)
-- `tables`: list of tables, each `{headers: [[...]], rows: [[...]]}`
+- `tables`: list of tables, each `{headers: [[...]], rows: [[...]]}` (present only when `--tables` is used or `include_tables=True`)
 - `depth`: crawl depth for that page
 - `error`: present if navigation/extraction failed
 
@@ -63,7 +64,7 @@ Each result is a JSON object with:
 
 - `WebScraper`: orchestrates crawling
 - `PageAutomator`: waits, clicks, scrolling (uses bundled JS)
-- `ContentExtractor`: extracts visible text, links, and tables (uses bundled JS)
+- `ContentExtractor`: extracts visible text, links, and optionally tables (uses bundled JS)
 - `URLNormalizer`: URL normalization and domain policy
 - `JsManager`: loads JS from `scraper/js` and parameterizes snippets
 
